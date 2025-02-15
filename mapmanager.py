@@ -19,7 +19,28 @@ class Mapmanager():
         self.block.reparentTo(self.land)
         self.color = self.getColor(position[2])
         self.block.setColor(self.color)
+        self.block.setScale(6)
+
+        self.block.setTag('at', str(position))
        # Додаємо блок до "землі"
+        
+    def isEmpty(self, position):
+        blocks = self.findBlocks(position)
+        if blocks:
+            return False
+        else:
+            return True
+
+    def findBlocks(self, position):
+        return self.land.findAllMaches('=at=', + str(position))
+    
+    def findHighestEmpty(self, position):
+        x, y, z = position
+        z = 1
+
+        while not self.isEmpty((x, y ,z)):
+            z += 1
+        return (x, y, z)
 
     def startNew(self):
         # Скидання або оновлення "землі"
