@@ -1,4 +1,5 @@
 from direct.showbase.ShowBase import ShowBase
+from mapmanager import *
 
 class Hero():
     def __init__(self, pos, land):
@@ -84,6 +85,12 @@ class Hero():
 
         base.accept('z', self.changeMode)
 
+        base.accept('b', self.build)
+        base.accept('v', self.destroy)
+
+        base.accept('l', self.land.loadMap)
+        base.accept('k', self.land.saveMap)
+
     def changeMode(self):
         if self.mode == True:
             self.mode = False
@@ -127,7 +134,7 @@ class Hero():
         if self.mode:
             self.just_move(angle)
         else:
-            self.just_move(angle)
+            self.try_move(angle)
 
     def forward(self):
         angle = (self.hero.getH() + 0) % 360
@@ -145,3 +152,18 @@ class Hero():
         angle = (self.hero.getH() + 270) % 360
         self.move_to(angle)
         
+    def build(self):
+        angle = self.hero.getH() % 360
+        pos = self.look_at(angle)
+        if self.mode:
+            self.land.addBlock(pos)
+        else:
+            self.land.buildBlock(pos)
+
+    def destroy(self):
+        angle = self.hero.getH() % 360
+        pos = self.look_at(angle)
+        if self.mode:
+            self.land.delBlock(pos)
+        else:
+            self.land.delBlockFrom(pos)  
