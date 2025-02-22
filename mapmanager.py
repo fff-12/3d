@@ -1,4 +1,5 @@
 from direct.showbase.ShowBase import ShowBase
+import pickle
 
 class Mapmanager():
     def __init__(self, base):
@@ -22,6 +23,7 @@ class Mapmanager():
         self.block.setScale(6)
 
         self.block.setTag('at', str(position))
+        print(position)
        # Додаємо блок до "землі"
         
     def isEmpty(self, position):
@@ -32,11 +34,12 @@ class Mapmanager():
             return True
 
     def findBlocks(self, position):
-        return self.land.findAllMaches('=at=', + str(position))
+        print(position)
+        return self.land.findAllMatches('=at=' + str(position))
     
     def findHighestEmpty(self, position):
         x, y, z = position
-        z = 1
+        z = 2
 
         while not self.isEmpty((x, y ,z)):
             z += 1
@@ -69,3 +72,38 @@ class Mapmanager():
             return self.colors[int(z / 12)]
         else:
             return self.colors[len(self.colors) - 1]
+        
+    def delBlock(self, position):
+        blocks = self.findBlocks(position)
+        for block in blocks:
+            block.removeNode()
+
+    def buildBlock(self, pos):
+        x, y, z = pos
+        new = self.findHighestEmpty(pos)
+        if new[2] <= z + 1:
+            new.addBlock(new)
+        
+    def buildBlockFrom(self, position):
+        x, y, z = findHighestEmpty(position)
+        pos = x, y, z - 1
+        blocks = self.findBlocks(pos)
+        for block in blocks:
+            block.removeNode()
+
+    def saveMap(self):
+        blocks = self.land.getChildren()
+        with open("my_map.dat", "wb") as fout:
+            pickle.dump(len(blocks), fout)
+            for block in blocks:
+                x, y, z = block.getPos()
+                pos = (int(x), int(y), int(z))
+                pickle.dump(pos, fout)
+
+    def loadMap(self):
+        self.clear()
+        with open("my_map.dat", "rb") as fin:
+            length = pickle.load(fin)
+            for i in range(length):
+                pos = pickle.load(fin)
+                self.addBlock(pos)
